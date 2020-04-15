@@ -59,7 +59,7 @@ impl Window {
         let img_ctx = sdl2::image::init(InitFlag::PNG | InitFlag::JPG).unwrap();
         let video_subsystem = ctx.video().unwrap();
      
-        let window = video_subsystem.window("Tetris", width, height)
+        let window = video_subsystem.window("NAIVE WINDOW", width, height)
             .position_centered()
             .build()
             .unwrap();
