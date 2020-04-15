@@ -7,4 +7,4 @@
 
 ![](imgs/unit_cube.gif)
 
-<p align="center">*A unit-cube real-time render.*</p>
+<p align="center"><i>Img 1. A unit-cube real-time render.</i></p>
