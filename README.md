@@ -1,6 +1,6 @@
 <h1 align="center"> Naive</h1>
 
-<p align="center">Naive is a simple attempt to create easy to use rasterizer inside Rust.</p>
+<p align="center">Naive is a simple attempt to create an easy to use rasterizer inside Rust.</p>
 
 :alert:**WIP**
 
