@@ -1,14 +1,22 @@
 use super::{matrix::Matrix, point::Point};
+use sdl2::pixels::Color;
+use std::cmp::max;
 
 #[derive(Copy, Clone)]
 pub struct Triangle {
-    pub p: [Point; 3]
+    pub p: [Point; 3],
+    pub base_color: Color,
+    pub color: Color
 }
 
 impl Triangle {
     // Creates a new Triangle instance
-    pub fn new(p1: Point, p2: Point, p3: Point) -> Self {
-        Triangle {p: [p1, p2, p3]}
+    pub fn new(p1: Point, p2: Point, p3: Point, base_color: Option<Color>) -> Self {
+        let color = match base_color {
+            Some(c) => c,
+            None => Color::RGBA(255,255,255,255)
+        };
+        Triangle {p: [p1, p2, p3], base_color: color, color}
     }
 
     // Returns an array of 2 tuples: i32 for X,Y
@@ -25,10 +33,18 @@ impl Triangle {
             (self.p[2].x, self.p[2].y, self.p[2].z)]
     }
 
+    pub fn shade(&mut self, luminance: f32) {
+        self.color.r = (self.base_color.r as f32*luminance) as u8;
+        self.color.g = (self.base_color.g as f32*luminance) as u8;
+        self.color.b = (self.base_color.b as f32*luminance) as u8;
+    }
+
     // Creates a new Triangle instance from matrix application to the given triangle
     pub fn from_matrix_application(m: &Matrix, origin: &Triangle) -> Self {
         Triangle {
-            p: [m.apply(&origin.p[0]), m.apply(&origin.p[1]), m.apply(&origin.p[2])]
+            p: [m.apply(&origin.p[0]), m.apply(&origin.p[1]), m.apply(&origin.p[2])],
+            base_color: origin.base_color,
+            color: origin.color,
         }
     }
 }

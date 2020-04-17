@@ -16,7 +16,7 @@ const W_HEIGHT:  u32 = 480;
 
 fn create() {
     let mut window = Window::new(W_WIDTH, W_HEIGHT);
-    let mut mesh = Mesh::load_object("example_objs/space_ship.obj");
+    let mut mesh = Mesh::load_object("example_objs/teapot.obj");
 
     let mut f_theta: f32 = 0.0;
     let near  = 0.1;
@@ -105,8 +105,12 @@ fn create() {
                normal.y * (translation.p[0].y - camera.y) +
                normal.z * (translation.p[0].z - camera.z) < 0.0 {
 
+                let mut illumination = Point::new(0.0, 0.0, -1.0); // Facing camera
+                let dp = illumination.normalize().dot_product(&normal);
+
                 // 3D -> 2D
                 let mut projection = Triangle::from_matrix_application(&m, &translation);
+                projection.shade(dp);
 
                 // Scale
                 projection.p[0].x += 1.0;
@@ -135,8 +139,8 @@ fn create() {
         // DRAW
         for tri in &raster_triangles {
             let points = tri.get_2d_points();
-            window.fill_triangle(C_WHITE, points[0], points[1], points[2]).unwrap();
-            window.draw_triangle(C_BLACK, points[0], points[1], points[2]).unwrap(); // wireframe
+            window.fill_triangle(tri.color, points[0], points[1], points[2]).unwrap();
+            window.draw_triangle(tri.color, points[0], points[1], points[2]).unwrap(); // wireframe
         }
 
 
