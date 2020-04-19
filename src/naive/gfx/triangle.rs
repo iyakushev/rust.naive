@@ -1,6 +1,7 @@
 use super::{matrix::Matrix, point::Point};
 use sdl2::pixels::Color;
 use std::cmp::max;
+use super::point::point_div;
 
 #[derive(Copy, Clone)]
 pub struct Triangle {
@@ -26,11 +27,18 @@ impl Triangle {
             (self.p[2].x as i32, self.p[2].y as i32)]
     }
 
-    // Returns an array of 3 tuples: i32 for X,Y,Z
+    /// Returns an array of 3 tuples: i32 for X,Y,Z
     pub fn get_3d_points(&self) -> [(f32,f32,f32); 3] {
-        [(self.p[0].x, self.p[0].y, self.p[0].z),
+        [
+            (self.p[0].x, self.p[0].y, self.p[0].z),
             (self.p[1].x, self.p[1].y, self.p[1].z),
             (self.p[2].x, self.p[2].y, self.p[2].z)]
+    }
+
+    pub fn normalize(&mut self) {
+        self.p[0] = point_div(self.p[0], self.p[0].w);
+        self.p[1] = point_div(self.p[1], self.p[1].w);
+        self.p[2] = point_div(self.p[2], self.p[2].w);
     }
 
     pub fn shade(&mut self, luminance: f32) {
@@ -39,7 +47,14 @@ impl Triangle {
         self.color.b = (self.base_color.b as f32*luminance) as u8;
     }
 
-    // Creates a new Triangle instance from matrix application to the given triangle
+    /// Add value to each point
+    pub fn add_each_point(&mut self, p: Point) {
+        self.p[0] += p;
+        self.p[1] += p;
+        self.p[2] += p;
+    }
+
+    /// Creates a new Triangle instance from matrix application to the given triangle
     pub fn from_matrix_application(m: &Matrix, origin: &Triangle) -> Self {
         Triangle {
             p: [m.apply(&origin.p[0]), m.apply(&origin.p[1]), m.apply(&origin.p[2])],

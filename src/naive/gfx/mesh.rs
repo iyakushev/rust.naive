@@ -19,7 +19,7 @@ impl Mesh {
             match line.get(0..1) {
                 Some("v") => {
                     let coords: Vec<f32> = line.get(2..).unwrap().split(' ').map(|x| x.parse::<f32>().unwrap()).collect();
-                    vert.push(Point {x: coords[0], y: coords[1], z: coords[2]});
+                    vert.push(Point::new(coords[0], coords[1], coords[2]));
                 },
                 Some("f") => {
                     let idxs: Vec<usize> =  line.get(2..).unwrap().split(' ').map(|x| x.parse::<usize>().unwrap()).collect();
