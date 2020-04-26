@@ -1,4 +1,4 @@
-use super::point::{Point, cross_product, point_mul};
+use super::vector::{Vec3D, cross_product, vec_mul_by};
 use std::ops::Mul;
 
 const UNIVERSAL_ARRAY_SIZE: usize = 4;
@@ -93,11 +93,11 @@ impl Matrix {
         translation
     }
 
-    pub fn point_at(pos: &Point, target: &Point, up: &Point) -> Matrix {
-        let mut forward: Point = *target - *pos;
+    pub fn point_at(pos: &Vec3D, target: &Vec3D, up: &Vec3D) -> Matrix {
+        let mut forward: Vec3D = *target - *pos;
         forward.normalize();
 
-        let mut new_up: Point = *up - point_mul(forward, forward.dot_product(up));
+        let mut new_up: Vec3D = *up - vec_mul_by(forward, forward.dot_product(up));
         new_up.normalize();
 
         let mut right = cross_product(&new_up, &forward);
@@ -123,8 +123,8 @@ impl Matrix {
         m
     }
 
-    pub fn apply(&self, input: &Point) -> Point {
-        Point {
+    pub fn apply(&self, input: &Vec3D) -> Vec3D {
+        Vec3D {
             x: input.x * self.values[0][0] + input.y * self.values[1][0] + input.z * self.values[2][0] + input.w * self.values[3][0],
             y: input.x * self.values[0][1] + input.y * self.values[1][1] + input.z * self.values[2][1] + input.w * self.values[3][1],
             z: input.x * self.values[0][2] + input.y * self.values[1][2] + input.z * self.values[2][2] + input.w * self.values[3][2],

@@ -1,14 +1,14 @@
 use std::ops::{Add, Sub, Mul, Div, AddAssign, SubAssign};
 
 #[derive(Copy, Clone)]
-pub struct Point {
+pub struct Vec3D {
     pub x: f32,
     pub y: f32,
     pub z: f32,
     pub w: f32
 }
 
-impl AddAssign for Point {
+impl AddAssign for Vec3D {
     fn add_assign(&mut self, other: Self) {
         self.x += other.x;
         self.y += other.y;
@@ -16,7 +16,7 @@ impl AddAssign for Point {
     }
 }
 
-impl SubAssign for Point {
+impl SubAssign for Vec3D {
     fn sub_assign(&mut self, other: Self) {
         self.x -= other.x;
         self.y -= other.y;
@@ -24,10 +24,10 @@ impl SubAssign for Point {
     }
 }
 
-impl Add for Point {
-    type Output = Point;
-    fn add(self, other: Point) -> Point {
-        Point {
+impl Add for Vec3D {
+    type Output = Vec3D;
+    fn add(self, other: Vec3D) -> Vec3D {
+        Vec3D {
             x: self.x + other.x,
             y: self.y + other.y,
             z: self.z + other.z,
@@ -36,10 +36,10 @@ impl Add for Point {
     }
 }
 
-impl Sub for Point {
-    type Output = Point;
-    fn sub(self, other: Point) -> Point {
-        Point {
+impl Sub for Vec3D {
+    type Output = Vec3D;
+    fn sub(self, other: Vec3D) -> Vec3D {
+        Vec3D {
             x: self.x - other.x,
             y: self.y - other.y,
             z: self.z - other.z,
@@ -48,8 +48,8 @@ impl Sub for Point {
     }
 }
 
-pub fn point_mul(p: Point, multiplier: f32) -> Point {
-    Point {
+pub fn vec_mul_by(p: Vec3D, multiplier: f32) -> Vec3D {
+    Vec3D {
         x: p.x * multiplier,
         y: p.y * multiplier,
         z: p.z * multiplier,
@@ -57,8 +57,8 @@ pub fn point_mul(p: Point, multiplier: f32) -> Point {
     }
 }
 
-pub fn point_div(p: Point, divider: f32) -> Point {
-    Point {
+pub fn vec_div_by(p: Vec3D, divider: f32) -> Vec3D {
+    Vec3D {
         x: p.x / divider,
         y: p.y / divider,
         z: p.z / divider,
@@ -66,9 +66,9 @@ pub fn point_div(p: Point, divider: f32) -> Point {
     }
 }
 
-
-pub fn cross_product(p: &Point, other: &Point) -> Point {
-    Point {
+/// Returns a cross product between two vectors
+pub fn cross_product(p: &Vec3D, other: &Vec3D) -> Vec3D {
+    Vec3D {
         x: p.y * other.z - p.z * other.y,
         y: p.z * other.x - p.x * other.z,
         z: p.x * other.y - p.y * other.x,
@@ -76,27 +76,29 @@ pub fn cross_product(p: &Point, other: &Point) -> Point {
     }
 }
 
-impl Point {
-    pub fn new(x: f32, y: f32, z: f32) -> Point {
-        Point {x, y, z, w: 1.0}
+impl Vec3D {
+    pub fn new(x: f32, y: f32, z: f32) -> Vec3D {
+        Vec3D {x, y, z, w: 1.0}
     }
-    pub fn init() -> Self { Point {x: 0.0, y: 0.0, z: 0.0, w: 1.0} }
+    pub fn init() -> Self { Vec3D {x: 0.0, y: 0.0, z: 0.0, w: 1.0} }
     pub fn as_tuple(&self) -> (f32, f32, f32, f32) {
         (self.x, self.y, self.z, self.w)
     }
 
+    /// Returns a length of the vector: |Vec3D|
     pub fn len(&self) -> f32 {
         self.dot_product(self).sqrt()
     }
 
-    /// Normalizes the point.
+    /// Normalizes the vector against its length.
     pub fn normalize(&mut self) -> &mut Self {
         let l = self.len(); //Vector length
         self.x /= l; self.y /= l; self.z /= l;
         self
     }
 
-    pub fn dot_product(&self, other: &Point) -> f32 {
+    /// Returns a dot product between self and another Vec3D
+    pub fn dot_product(&self, other: &Vec3D) -> f32 {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
 

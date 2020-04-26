@@ -1,7 +1,7 @@
 mod naive;
 
 use naive::render::Window;
-use naive::gfx::{Triangle, Point, Matrix, Mesh};
+use naive::gfx::{Triangle, Vec3D, Matrix, Mesh};
 use naive::gfx;
 use std::process::exit;
 use sdl2::{
@@ -10,6 +10,7 @@ use sdl2::{
     pixels::Color
 };
 use std::cmp::max;
+use crate::naive::gfx::vector::vec_mul_by;
 
 const C_WHITE: Color = Color::RGBA(255,255,255,255);
 const C_BLACK: Color = Color::RGBA(0,0,0,255);
@@ -30,23 +31,32 @@ fn create() {
 
     let mut event = window.create_event_pump();
     let mut timer = std::time::Instant::now();
+    let mut draw_timer = std::time::Instant::now();
     let mut fps = 0;
+    let mut yaw = 0.0;
 
-    let mut camera = Point::init();
-    let look_d = Point::new(0.0,0.0,1.0);
+    let mut camera = Vec3D::init();
+    let mut look_d = Vec3D::new(0.0, 0.0, 1.0);
 
     'run: loop {
         // f_theta += 0.01;
+        let elapsed_time = draw_timer.elapsed().as_micros() as f32 / 1e2;
         window.draw_bg(Color::RGB(54,54,54));
-
+        let forward = vec_mul_by(look_d, 8.0 * elapsed_time);
         for e in event.poll_iter() {
             match e {
                 Event::Quit {..} |
                 Event::KeyDown { keycode: Some(Keycode::Escape), .. } => break 'run,
-                Event::KeyDown { keycode: Some(Keycode::Up), .. } => camera.y += 0.8,
-                Event::KeyDown { keycode: Some(Keycode::Down), .. } => camera.y -= 0.8,
-                Event::KeyDown { keycode: Some(Keycode::Left), .. } => camera.x -= 0.8,
-                Event::KeyDown { keycode: Some(Keycode::Right), .. } => camera.x += 0.8,
+                // Tilting
+                Event::KeyDown { keycode: Some(Keycode::Up), .. } => camera.y += 0.5,
+                Event::KeyDown { keycode: Some(Keycode::Down), .. } => camera.y -= 0.5,
+                Event::KeyDown { keycode: Some(Keycode::Left), .. } => camera.x -= 0.5,
+                Event::KeyDown { keycode: Some(Keycode::Right), .. } => camera.x += 0.5,
+                // Movement
+                Event::KeyDown { keycode: Some(Keycode::W), .. } => camera += forward,
+                Event::KeyDown { keycode: Some(Keycode::S), .. } => camera -= forward,
+                Event::KeyDown { keycode: Some(Keycode::A), .. } => yaw -= 8.0 * elapsed_time,
+                Event::KeyDown { keycode: Some(Keycode::D), .. } => yaw += 8.0 * elapsed_time,
                 _ => {}
             }
         }
@@ -60,8 +70,11 @@ fn create() {
         mat_world = mat_rz * mat_rx; // apply rotation to the world
         mat_world = mat_world * mat_trans; // apply translation to the world
 
-        let up_vec = Point::new(0.0,1.0,0.0);
-        let target = camera + look_d;
+        let mut target = Vec3D::new(0.0, 0.0, 1.0);
+        let up_vec = Vec3D::new(0.0, 1.0, 0.0);
+        let mat_crot = Matrix::init_rotation_y(yaw);
+        look_d = mat_crot.apply(&target);
+        target = camera + look_d;
         let mat_view = Matrix::point_at(&camera, &target, &up_vec).quick_inverse();
 
 
@@ -72,13 +85,13 @@ fn create() {
 
             let line1 = t_transformed.p[1] - t_transformed.p[0];
             let line2 = t_transformed.p[2] - t_transformed.p[0];
-            let mut normal = gfx::point::cross_product(&line1, &line2);
+            let mut normal = gfx::vector::cross_product(&line1, &line2);
 
             // a ray from triangle to camera
             let camera_ray = t_transformed.p[0] - camera;
 
             if normal.normalize().dot_product(&camera_ray) < 0.0 {
-                let mut illumination = Point::new(0.0, 1.0, -1.0); // Facing camera
+                let mut illumination = Vec3D::new(0.0, 1.0, -1.0); // Facing camera
                 let dp = illumination.normalize().dot_product(&normal).max(0.1);
 
                 // apply view matrix
@@ -90,7 +103,7 @@ fn create() {
                 projection.shade(dp);
 
                 // Scale
-                projection.add_each_point(Point::new(1.0,1.0,0.0));
+                projection.add_each_point(Vec3D::new(1.0, 1.0, 0.0));
 
                 projection.p[0].x *= 0.5 * W_WIDTH as f32;
                 projection.p[0].y *= 0.5 * W_HEIGHT as f32;
@@ -118,14 +131,13 @@ fn create() {
 
 
         if timer.elapsed().as_secs() > 1 {
-            window.set_title(&format!("NAIVE WINDOW. FPS: {}", fps));
+            window.set_title(&format!("NAIVE WINDOW. FPS: {}, E = {}", fps, elapsed_time));
             timer = std::time::Instant::now();
             fps = 0;
         }
         window.present();
         fps += 1;
-        std::thread::sleep(std::time::Duration::new(0, 1_000_000_000/100));
-
+        draw_timer = std::time::Instant::now();
     }
 
 }

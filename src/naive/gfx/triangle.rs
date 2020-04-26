@@ -1,18 +1,18 @@
-use super::{matrix::Matrix, point::Point};
+use super::{matrix::Matrix, vector::Vec3D};
 use sdl2::pixels::Color;
 use std::cmp::max;
-use super::point::point_div;
+use super::vector::vec_div_by;
 
 #[derive(Copy, Clone)]
 pub struct Triangle {
-    pub p: [Point; 3],
+    pub p: [Vec3D; 3],
     pub base_color: Color,
     pub color: Color
 }
 
 impl Triangle {
     // Creates a new Triangle instance
-    pub fn new(p1: Point, p2: Point, p3: Point, base_color: Option<Color>) -> Self {
+    pub fn new(p1: Vec3D, p2: Vec3D, p3: Vec3D, base_color: Option<Color>) -> Self {
         let color = match base_color {
             Some(c) => c,
             None => Color::RGBA(255,255,255,255)
@@ -36,9 +36,9 @@ impl Triangle {
     }
 
     pub fn normalize(&mut self) {
-        self.p[0] = point_div(self.p[0], self.p[0].w);
-        self.p[1] = point_div(self.p[1], self.p[1].w);
-        self.p[2] = point_div(self.p[2], self.p[2].w);
+        self.p[0] = vec_div_by(self.p[0], self.p[0].w);
+        self.p[1] = vec_div_by(self.p[1], self.p[1].w);
+        self.p[2] = vec_div_by(self.p[2], self.p[2].w);
     }
 
     pub fn shade(&mut self, luminance: f32) {
@@ -48,7 +48,7 @@ impl Triangle {
     }
 
     /// Add value to each point
-    pub fn add_each_point(&mut self, p: Point) {
+    pub fn add_each_point(&mut self, p: Vec3D) {
         self.p[0] += p;
         self.p[1] += p;
         self.p[2] += p;
