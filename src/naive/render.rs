@@ -99,6 +99,12 @@ impl Window {
         Ok(())
     }
 
+    pub fn draw_triangle_fast(&mut self, color: Color, point1: (i16,i16),
+                         point2: (i16,i16), point3: (i16,i16)) -> Result<(), String> {
+        self.canvas.trigon(point1.0,point1.1,point2.0,point2.1,point3.0,point3.1,color)?;
+        Ok(())
+    }
+
     // Uses SDL_GFX primitives to draw filled triangles
     pub fn fill_triangle(&mut self, color: Color, point1: (i32,i32),
                          point2: (i32,i32), point3: (i32,i32)) -> Result<(), String> {

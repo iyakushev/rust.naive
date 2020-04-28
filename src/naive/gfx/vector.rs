@@ -1,6 +1,6 @@
 use std::ops::{Add, Sub, Mul, Div, AddAssign, SubAssign};
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Vec3D {
     pub x: f32,
     pub y: f32,
@@ -48,7 +48,7 @@ impl Sub for Vec3D {
     }
 }
 
-pub fn vec_mul_by(p: Vec3D, multiplier: f32) -> Vec3D {
+pub fn vec_mul_by(p: &Vec3D, multiplier: f32) -> Vec3D {
     Vec3D {
         x: p.x * multiplier,
         y: p.y * multiplier,
@@ -57,7 +57,7 @@ pub fn vec_mul_by(p: Vec3D, multiplier: f32) -> Vec3D {
     }
 }
 
-pub fn vec_div_by(p: Vec3D, divider: f32) -> Vec3D {
+pub fn vec_div_by(p: &Vec3D, divider: f32) -> Vec3D {
     Vec3D {
         x: p.x / divider,
         y: p.y / divider,
@@ -74,6 +74,14 @@ pub fn cross_product(p: &Vec3D, other: &Vec3D) -> Vec3D {
         z: p.x * other.y - p.y * other.x,
         w: 1.0
     }
+}
+
+pub fn intersect_plane(plane_point: Vec3D, plane_normal: &mut Vec3D, ray_start: Vec3D, ray_finish: Vec3D) -> Vec3D {
+    plane_normal.normalize();
+    let a = ray_start.dot_product(plane_normal);
+    let b = ray_finish.dot_product(plane_normal);
+    let t = (plane_normal.dot_product(&plane_point) - a)/(b - a);
+    ray_start + vec_mul_by(&(ray_finish - ray_start), t)
 }
 
 impl Vec3D {

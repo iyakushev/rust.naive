@@ -2,9 +2,11 @@
 
 <p align="center">Naive is a simple attempt to create an easy to use rasterizer inside Rust.</p>
 
-:warning: **WIP** :warning:
+TODO:
+* separate camera instance;
+* texture mapping.
 
+![](imgs/land.gif)
 
-![](imgs/unit_cube.gif)
-
-<p align="center"><i>Img 1. A unit-cube real-time render.</i></p>
+<p align="center"><i>Img 1. A real-time render of an `.obj` file.</i></p>
+FPS was cut in half due to the screen recording.

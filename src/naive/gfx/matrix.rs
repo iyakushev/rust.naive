@@ -97,7 +97,7 @@ impl Matrix {
         let mut forward: Vec3D = *target - *pos;
         forward.normalize();
 
-        let mut new_up: Vec3D = *up - vec_mul_by(forward, forward.dot_product(up));
+        let mut new_up: Vec3D = *up - vec_mul_by(&forward, forward.dot_product(up));
         new_up.normalize();
 
         let mut right = cross_product(&new_up, &forward);
