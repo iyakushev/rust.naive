@@ -8,5 +8,6 @@ TODO:
 
 ![](imgs/land.gif)
 
-<p align="center"><i>Img 1. A real-time render of an `.obj` file.</i></p>
+<p align="center"><i>Img 1. A real-time render of an <b>.obj</b> file.</i></p>
+  
 FPS was cut in half due to the screen recording.
